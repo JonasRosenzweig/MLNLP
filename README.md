@@ -2,6 +2,7 @@ Tutorials and Reference Code Branch
 
 So far: 
 https://keras.io/examples/nlp/text_classification_from_scratch/
+
 https://www.kaggle.com/shyambhu/sentiment-classification-using-lstm#
 
 Install modules with: >>> pip instal <module name> in python console
