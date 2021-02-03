@@ -1,4 +1,4 @@
-Tutorials and Reference Code Branch
+Tutorials and Reference Code Branch - lots of files because datasets are included 
 
 So far: 
 
@@ -20,6 +20,7 @@ to get nltk working (natural language processing toolkit) go to python console a
  nltk.download("stopwords") 
  
 if you want to download other parts of the nltk corpus: 
+
  nltk.download()
  
 this will open the nltk download manager
