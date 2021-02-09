@@ -6,6 +6,10 @@ https://keras.io/examples/nlp/text_classification_from_scratch/
 
 https://www.kaggle.com/shyambhu/sentiment-classification-using-lstm#
 
+Applied Natural Language Processing with Python: Implementing Machine Learning and Deep Learning Algorithms for Natural Language Processing, by Taweh Beysolow II
+ISBN-13 (pbk): 978-1-4842-3732-8 ISBN-13 (electronic): 978-1-4842-3733-5
+https://doi.org/10.1007/978-1-4842-3733-5
+
 Install modules with: 
 
 pip instal <module name> in python console
