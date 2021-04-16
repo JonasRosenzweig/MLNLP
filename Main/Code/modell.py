@@ -66,14 +66,61 @@ DATASET_ENCODING = "ISO-8859-1"
 
 # dataset paths
 
-dirPath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP2\\Tutorials_and_References\\notebookGold\\input"
+dirPath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Data\\Labelled"
 
 
 def amazing():
+    def decode_sentiment(label):
+        return decode_map[int(label)]
+
+    # This is where the decode_sentiment method looks through the target column and switches numbers to strings (negative,positive)
+
+    # print("DATATYPE: ", type(df.target[1]))
+
+    # df.target = df.target.apply(lambda x: decode_sentiment(x))
+    # df.target is of class type "numpy.int64" => Integer (-9223372036854775808 to 9223372036854775807) Lambda function converts this..
+
 
     for filename in os.listdir(dirPath):
+
         file = os.path.join(dirPath, filename)
-        df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS)
+        df = pd.read_csv(file, encoding=DATASET_ENCODING)
+        if filename == "Airline_Tweets.csv":
+            # decode_map = {"negative": "NEGATIVE", "neutral": "NEUTRAL", "positive": "POSITIVE"}
+            DATASET_COLUMNS = ["tweet_id", "target", "airline_sentiment_confidence", "negativereason",
+                               "negativereason_confidence", "airline", "airline_sentiment_gold", "name", "negativereason_gold", "retweet_count",
+                               "text", "tweet_coord", "tweet_created", "tweet_location", "user_timezone"]
+            df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS)
+            df.target = df.target
+            print("Printing DF", df.target)
+        elif filename == "Financial_news_all-data.csv":
+            DATASET_COLUMNS = ["target", "text"]
+            df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS)
+        elif filename == "IMDB_Dataset.csv":
+            DATASET_COLUMNS = ["target", "text"]
+            df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS)
+        elif filename == "Reddit_data.csv":
+            decode_map = {-1: "NEGATIVE", 0: "NEUTRAL", 1: "POSITIVE"}
+            DATASET_COLUMNS = ["text", "target"]
+            df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS)
+            df.target = df.target.apply(lambda x: decode_sentiment(x))
+        elif filename == "Steam_train.csv":
+            DATASET_COLUMNS = ["review_id", "title", "year", "text", "target"]
+            decode_map = {1: "NEGATIVE",  0: "POSITIVE"}
+            df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS)
+            df.target = df.target.apply(lambda x: decode_sentiment(x))
+        elif filename == "Twitter_data.csv":
+            DATASET_COLUMNS = ["text", "target"]
+            decode_map = {-1: "NEGATIVE", 0: "NEUTRAL", 1: "POSITIVE"}
+            df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS)
+            df.target = df.target.apply(lambda x: decode_sentiment(x))
+        elif filename == "sentiment140.csv":
+            decode_map = {0: "NEGATIVE", 2: "NEUTRAL", 4: "POSITIVE"}
+            DATASET_COLUMNS = ["target", "ids", "date", "flag", "user", "text"]
+            df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS)
+            df.target = df.target.apply(lambda x: decode_sentiment(x))
+
+
         # checking if it is a file
         if os.path.isfile(file):
             print(file)
@@ -93,19 +140,13 @@ def amazing():
             # df.head(5)
 
             # Used in decode_sentiment for 'labeling data?'
-            decode_map = {0: "NEGATIVE", 2: "NEUTRAL", 4: "POSITIVE"}
 
-            def decode_sentiment(label):
-                return decode_map[int(label)]
 
-            # This is where the decode_sentiment method looks through the target column and switches numbers to strings (negative,positive)
 
-            # print("DATATYPE: ", type(df.target[1]))
 
-            # df.target = df.target.apply(lambda x: decode_sentiment(x))
-            # df.target is of class type "numpy.int64" => Integer (-9223372036854775808 to 9223372036854775807) Lambda function converts this..
 
-            df.target = df.target.apply(lambda x: decode_sentiment(x))
+
+
 
             stop_words = stopwords.words("english")
             stemmer = SnowballStemmer("english")
