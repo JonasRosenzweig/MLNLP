@@ -14,8 +14,9 @@ def trainModel():
     amazing_obj = modell.amazing()
     m = amazing_obj[0]
     m_1 = amazing_obj[1]
+    m_2 = amazing_obj[2]
     t = amazing_obj[2]
-    return m, m_1, t             # m represents model and t tokenizer
+    return m, m_1, m_2, t             # m represents model and t tokenizer
 
 
 def saveModel(model, tokenizer, dataset):

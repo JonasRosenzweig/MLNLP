@@ -12,7 +12,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
-from keras.layers import Activation, Dense, Dropout, Embedding, Flatten, Conv1D, MaxPooling1D, LSTM
+from keras.layers import Activation, Dense, Dropout, Embedding, Flatten, Conv1D, MaxPooling1D, LSTM, SpatialDropout1D
 from keras import utils
 from keras.callbacks import ReduceLROnPlateau, EarlyStopping
 
@@ -51,8 +51,8 @@ W2V_MIN_COUNT = 10
 
 # KERAS
 SEQUENCE_LENGTH = 300
-EPOCHS = 1
-BATCH_SIZE = 512
+EPOCHS = 8
+BATCH_SIZE = 1024
 
 # SENTIMENT
 POSITIVE = "POSITIVE"
@@ -97,7 +97,7 @@ def amazing():
             DATASET_COLUMNS = ["target", "text"]
             df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS)
         elif filename == "IMDB_Dataset.csv":
-            DATASET_COLUMNS = ["target", "text"]
+            DATASET_COLUMNS = ["text", "target"]
             df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS, skiprows=1)
         elif filename == "Reddit_data.csv":
             decode_map = {-1: "NEGATIVE", 0: "NEUTRAL", 1: "POSITIVE"}
@@ -125,6 +125,11 @@ def amazing():
             print(file)
         print("Open file:", dirPath + filename)
         print("Dataset size:", len(df))
+        target_cnt = Counter(df.target)
+
+        plt.figure(figsize=(16, 8))
+        plt.bar(target_cnt.keys(), target_cnt.values())
+        plt.title("Dataset labels Distribution")
 
         def amazing2():
 
@@ -246,15 +251,26 @@ def amazing():
             model_1.add(LSTM(100, dropout=0.2, recurrent_dropout=0.2))
             model_1.add(Dense(1, activation='relu'))
 
-
             model_1.compile(loss='binary_crossentropy',
                             optimizer="adam",
                             metrics=['accuracy'])
             modelList.append(model_1)
 
+            model_2 = Sequential(name='model_2')
+            model_2.add(embedding_layer)
+            model_2.add(SpatialDropout1D(0.7))
+            model_2.add(LSTM(64, dropout=0.7, recurrent_dropout=0.7))
+            model_2.add(Dense(1, activation='softmax'))
+
+            model_2.compile(optimizer='adam',
+                            loss='categorical_crossentropy',
+                            metrics=['accuracy'])
+            modelList.append(model_2)
+
             # not sure what dis does
             callbacks = [ReduceLROnPlateau(monitor='val_loss', patience=5, cooldown=0),  # Needs to be looked into****ØØØØØ
-                         EarlyStopping(monitor='val_accuracy', min_delta=1e-4, patience=5)]
+                         EarlyStopping(monitor='val_accuracy', min_delta=1e-4, patience=5),
+                         EarlyStopping(monitor='val_loss', min_delta=0.0001)]
 
             def trainAndEval(modelName):
                 modelName.summary()
