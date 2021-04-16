@@ -33,7 +33,7 @@ import logging
 import time
 import pickle
 import itertools
-from Tutorials_and_References.notebookGold.MLNLP import MethodHandler
+import MethodHandler
 
 import tensorflow as tf
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'

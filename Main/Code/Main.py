@@ -1,4 +1,4 @@
-from Tutorials_and_References.notebookGold.MLNLP import MethodHandler
+import MethodHandler
 
 # MethodHandler.loadModel()
 #

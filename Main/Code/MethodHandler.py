@@ -3,7 +3,7 @@ from keras.preprocessing.sequence import pad_sequences
 from gensim.models import Word2Vec
 import pickle
 import pandas as pd
-from Tutorials_and_References.notebookGold.model import modell
+import modell
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, roc_curve, roc_auc_score, precision_recall_curve, f1_score, auc
 import time
 
