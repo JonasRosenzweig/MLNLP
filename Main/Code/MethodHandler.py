@@ -9,6 +9,9 @@ import modell
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, roc_curve, roc_auc_score, precision_recall_curve, f1_score, auc
 import time
 
+savepath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Code\\save" #Jonas path
+#savepath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Code\\save" # Hammi path
+
 def metrics():
     return
 
@@ -22,7 +25,7 @@ def trainModel():
 
 
 def saveModel(model, tokenizer, dataset):
-    path = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Code\\save"
+    path = savepath
     ts = time.gmtime()
     ts = time.strftime("%Y-%m-%d_%H-%M-%S", ts)
     modelName = model.name+'_'+dataset+'_'+ts+'.h5'

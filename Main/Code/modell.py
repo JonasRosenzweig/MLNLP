@@ -52,7 +52,7 @@ W2V_MIN_COUNT = 10
 
 # KERAS
 SEQUENCE_LENGTH = 300
-EPOCHS = 2
+EPOCHS = 1
 BATCH_SIZE = 2048
 
 # SENTIMENT
@@ -67,8 +67,10 @@ DATASET_ENCODING = "ISO-8859-1"
 
 # dataset paths
 
-# dirPath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Data\\Labelled" #Jonas path
-dirPath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Data\\Labelled"  # Hammi path
+dirPath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Data\\Labelled"  # Jonas path
+# dirPath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Data\\Labelled"  # Hammi path
+savepath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Code\\save"  # Jonas path
+# savepath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Code\\save" # Hammi path
 
 ts = time.gmtime()
 ts = time.strftime("%Y-%m-%d_%H-%M-%S", ts)
@@ -207,7 +209,7 @@ def amazing():
         # checking if it is a file
         if os.path.isfile(file):
             print(file)
-        print("Open file:", dirPath + filename)
+        print("Open file:", dirPath + "\\" + filename)
         print("Dataset size:", len(df))
         target_cnt = Counter(df.target)
 
@@ -287,7 +289,7 @@ def amazing():
             x_val = pad_sequences(tokenizer.texts_to_sequences(dfVal.text), maxlen=SEQUENCE_LENGTH)  # TEST TO EVAL?
 
             labels = dfTrain.target.unique().tolist()
-            print(labels)
+            # print(labels)
 
             encoder = LabelEncoder()
             encoder.fit(dfTrain.target.tolist())
@@ -299,13 +301,13 @@ def amazing():
             y_train = y_train.reshape(-1, 1)
             y_test = y_test.reshape(-1, 1)
             y_val = y_val.reshape(-1, 1)
-            print("x_train", x_train.shape)
-            print("y_train", y_train.shape)
-            print()
-            print("x_test", x_test.shape)
-            print("y_test", y_test.shape)
+            # print("x_train", x_train.shape)
+            # print("y_train", y_train.shape)
+            # print()
+            # print("x_test", x_test.shape)
+            # print("y_test", y_test.shape)
 
-            print(y_train[:10])
+            # print(y_train[:10])
 
             embedding_matrix = np.zeros((vocab_size, W2V_SIZE))
             for word, i in tokenizer.word_index.items():
@@ -381,7 +383,7 @@ def amazing():
                 #                     callbacks=callbacks)
 
                 # score = model.evaluate(x_test, y_test, batch_size=BATCH_SIZE)
-                print()
+                # print()
                 print("ACCURACY:", score[1])
                 print("LOSS:", score[0])
 
@@ -398,23 +400,22 @@ def amazing():
                 plt.title('Training and validation accuracy')
                 plt.legend()
 
-                save_path = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Code\\save"
+                save_path = savepath
                 os.chdir(save_path)
 
                 fig1 = plt.gcf()
-                fig1.savefig("tr+val acc" + filename + ts + '.png')
+                fig1.savefig("tr+val_acc_" + filename + ts + '.png')
                 plt.figure()
                 plt.plot(epochs, loss, 'b', label='Training loss')
                 plt.plot(epochs, val_loss, 'r', label='Validation loss')
                 plt.title('Training and validation loss')
                 plt.legend()
 
-                #plt.figure()
+                # plt.figure()
                 fig2 = plt.gcf()
-                fig2.savefig("tr+val loss" + filename + ts + '.png')
+                fig2.savefig("tr+val_loss" + filename + ts + '.png')
 
                 plt.show()
-
 
                 # SENTIMENT DECODE METHOD
 
@@ -467,19 +468,20 @@ def amazing():
                     plt.xlabel('Predicted label', fontsize=25)
 
                 cnf_matrix = confusion_matrix(y_test_1d, y_pred_1d, labels=["positive", "negative"])
-                print("printing cnf_matrix...",cnf_matrix)
+                # print("printing cnf_matrix...",cnf_matrix)
                 plt.figure(figsize=(12, 12))
                 plot_confusion_matrix(cnf_matrix, classes=dfTrain.target.unique(), title="Confusion matrix")
                 fig3 = plt.gcf()
                 plt.show()
-                fig3.savefig("cm" + filename + ts + '.png')
+                fig3.savefig("cm_" + filename + ts + '.png')
                 print(classification_report(y_test_1d, y_pred_1d))
                 accuracy_score(y_test_1d, y_pred_1d)
                 print("printing acc score: ", accuracy_score)
 
                 report = classification_report(y_test_1d, y_pred_1d, output_dict=True)
                 reportData = pd.DataFrame(report).transpose()
-                reportData.to_csv("savingInfo.csv", index=False)
+                reportDataName = "classificationReport_" + model.name + filename + ts +".csv"
+                reportData.to_csv(reportDataName, index=False)
 
             return model, model_1, tokenizer
 
