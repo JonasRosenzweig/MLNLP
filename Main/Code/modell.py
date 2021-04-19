@@ -480,7 +480,7 @@ def amazing():
 
                 report = classification_report(y_test_1d, y_pred_1d, output_dict=True)
                 reportData = pd.DataFrame(report).transpose()
-                reportDataName = "classificationReport_" + model.name + filename + ts +".csv"
+                reportDataName = model.name + "classificationReport_" + filename + ts +".csv"
                 reportData.to_csv(reportDataName, index=False)
 
             return model, model_1, tokenizer
