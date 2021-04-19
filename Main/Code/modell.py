@@ -52,7 +52,7 @@ W2V_MIN_COUNT = 10
 
 # KERAS
 SEQUENCE_LENGTH = 300
-EPOCHS = 1
+EPOCHS = 2
 BATCH_SIZE = 2048
 
 # SENTIMENT
@@ -69,6 +69,9 @@ DATASET_ENCODING = "ISO-8859-1"
 
 # dirPath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Data\\Labelled" #Jonas path
 dirPath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Data\\Labelled"  # Hammi path
+
+ts = time.gmtime()
+ts = time.strftime("%Y-%m-%d_%H-%M-%S", ts)
 
 
 def amazing():
@@ -395,72 +398,81 @@ def amazing():
                 plt.title('Training and validation accuracy')
                 plt.legend()
 
+                save_path = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Code\\save"
+                os.chdir(save_path)
+
                 plt.figure()
+
+                plt.savefig(filename + ts + '.png')
 
                 plt.plot(epochs, loss, 'b', label='Training loss')
                 plt.plot(epochs, val_loss, 'r', label='Validation loss')
                 plt.title('Training and validation loss')
                 plt.legend()
 
+                plt.figure()
+                plt.savefig(filename + ts + '.png')
                 plt.show()
 
-            # SENTIMENT DECODE METHOD
 
-            def decode_sentiment(score, include_neutral=True):
-                if include_neutral:
-                    label = NEUTRAL
-                    if score <= SENTIMENT_THRESHOLDS[0]:
-                        label = NEGATIVE
-                    elif score >= SENTIMENT_THRESHOLDS[1]:
-                        label = POSITIVE
+                # SENTIMENT DECODE METHOD
 
-                    return label
-                else:
-                    return NEGATIVE if score < 0.5 else POSITIVE
+                def decode_sentiment(score, include_neutral=True):
+                    if include_neutral:
+                        label = NEUTRAL
+                        if score <= SENTIMENT_THRESHOLDS[0]:
+                            label = NEGATIVE
+                        elif score >= SENTIMENT_THRESHOLDS[1]:
+                            label = POSITIVE
 
-            # EVAL PARAMS FOR CONFUSION MATRIX
-            y_pred_1d = []
-            #            y_test_1d = list(dfTrain.target)
-            y_test_1d = list(dfVal.target)
+                        return label
+                    else:
+                        return NEGATIVE if score < 0.5 else POSITIVE
 
-            # predictions = model.predict(x_test, verbose=1, batch_size=8000)
-            predictions = model.predict(x_val, verbose=1, batch_size=8000)
-            y_pred_1d = [decode_sentiment(score, include_neutral=False) for score in predictions]
+                # EVAL PARAMS FOR CONFUSION MATRIX
+                y_pred_1d = []
+                #            y_test_1d = list(dfTrain.target)
+                y_test_1d = list(dfVal.target)
 
-            def plot_confusion_matrix(cm, classes,
-                                      title='Confusion matrix',
-                                      cmap=plt.cm.Blues):
-                """
-                This function prints and plots the confusion matrix.
-                Normalization can be applied by setting `normalize=True`.
-                """
+                # predictions = model.predict(x_test, verbose=1, batch_size=8000)
+                predictions = model.predict(x_val, verbose=1, batch_size=8000)
+                y_pred_1d = [decode_sentiment(score, include_neutral=False) for score in predictions]
 
-                cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+                def plot_confusion_matrix(cm, classes,
+                                          title='Confusion matrix',
+                                          cmap=plt.cm.Blues):
+                    """
+                    This function prints and plots the confusion matrix.
+                    Normalization can be applied by setting `normalize=True`.
+                    """
 
-                plt.imshow(cm, interpolation='nearest', cmap=cmap)
-                plt.title(title, fontsize=30)
-                plt.colorbar()
-                tick_marks = np.arange(len(classes))
-                plt.xticks(tick_marks, classes, rotation=90, fontsize=22)
-                plt.yticks(tick_marks, classes, fontsize=22)
+                    cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
 
-                fmt = '.2f'
-                thresh = cm.max() / 2.
-                for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-                    plt.text(j, i, format(cm[i, j], fmt),
-                             horizontalalignment="center",
-                             color="white" if cm[i, j] > thresh else "black")
+                    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+                    plt.title(title, fontsize=30)
+                    plt.colorbar()
+                    tick_marks = np.arange(len(classes))
+                    plt.xticks(tick_marks, classes, rotation=90, fontsize=22)
+                    plt.yticks(tick_marks, classes, fontsize=22)
 
-                plt.ylabel('True label', fontsize=25)
-                plt.xlabel('Predicted label', fontsize=25)
+                    fmt = '.2f'
+                    thresh = cm.max() / 2.
+                    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+                        plt.text(j, i, format(cm[i, j], fmt),
+                                 horizontalalignment="center",
+                                 color="white" if cm[i, j] > thresh else "black")
 
-            cnf_matrix = confusion_matrix(y_test_1d, y_pred_1d, labels=["positive", "negative"])
-            print("printing cnf_matrix...",cnf_matrix)
-            plt.figure(figsize=(12, 12))
-            plot_confusion_matrix(cnf_matrix, classes=dfTrain.target.unique(), title="Confusion matrix")
-            plt.show()
-            print(classification_report(y_test_1d, y_pred_1d))
-            accuracy_score(y_test_1d, y_pred_1d)
+                    plt.ylabel('True label', fontsize=25)
+                    plt.xlabel('Predicted label', fontsize=25)
+
+                cnf_matrix = confusion_matrix(y_test_1d, y_pred_1d, labels=["positive", "negative"])
+                print("printing cnf_matrix...",cnf_matrix)
+                plt.figure(figsize=(12, 12))
+                plot_confusion_matrix(cnf_matrix, classes=dfTrain.target.unique(), title="Confusion matrix")
+                plt.show()
+                plt.savefig(filename + ts + '.png')
+                print(classification_report(y_test_1d, y_pred_1d))
+                accuracy_score(y_test_1d, y_pred_1d)
 
             return model, model_1, tokenizer
 

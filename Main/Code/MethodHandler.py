@@ -1,3 +1,5 @@
+import os
+
 from keras.models import load_model
 from keras.preprocessing.sequence import pad_sequences
 from gensim.models import Word2Vec
@@ -20,10 +22,14 @@ def trainModel():
 
 
 def saveModel(model, tokenizer, dataset):
+    path = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Code\\save"
     ts = time.gmtime()
     ts = time.strftime("%Y-%m-%d_%H-%M-%S", ts)
     modelName = model.name+'_'+dataset+'_'+ts+'.h5'
     tokenizerName = model.name+'_'+dataset+'_'+ts+'tokenizer.pkl'
+
+    os.chdir(path)
+
     model.save(modelName)
     pickle.dump(tokenizer, open(tokenizerName, "wb"), protocol=0)
 
