@@ -71,8 +71,21 @@ dirPath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Data\\Labelled" #Jona
 
 
 def amazing():
+
     def decode_sentiment(label):
         return decode_map[int(label)]
+
+    def diff(positive, negative):
+        if len(positive) > len(negative):
+            difference = len(positive) - len(negative)
+            return len(positive) - difference
+
+        elif len(negative) > len(positive):
+            difference = len(negative) - len(positive)
+            return len(negative) - difference
+
+        else:
+            print('something went wrong..', len(positive), len(negative))
 
     # This is where the decode_sentiment method looks through the target column and switches numbers to strings (negative,positive)
 
@@ -92,29 +105,45 @@ def amazing():
                                "negativereason_gold", "retweet_count",
                                "text", "tweet_coord", "tweet_created", "tweet_location", "user_timezone"]
             df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS, skiprows=1)
-            # df.target = df.target
             df = df[df.target != "neutral"]  # removes neutral
-            print("Printing DF", df.target)
-            print("Printing unique", df.target.unique())
-            print('')
+
+            positive = df[df['target'] == "positive"]
+            negative = df[df['target'] == "negative"]
+
+            if len(positive) != len(negative):
+                positive = positive[:diff(positive, negative)]
+                negative = negative[:diff(positive, negative)]
+                df = pd.concat(positive, negative)
+
 
 
         elif filename == "Financial_news_all-data.csv":
             DATASET_COLUMNS = ["target", "text"]
             df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS)
             df = df[df.target != "neutral"]  # removes neutral
-            print("Printing target:::", df.target)
-            print("Printing unique", df.target.unique())
-            print('')
+
+            positive = df[df['target'] == "positive"]
+            negative = df[df['target'] == "negative"]
+
+            if len(positive) != len(negative):
+                positive = positive[:diff(positive, negative)]
+                negative = negative[:diff(positive, negative)]
+                df = pd.concat(positive, negative)
+
 
         elif filename == "IMDB_Dataset.csv":
             DATASET_COLUMNS = ["text", "target"]
             df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS, skiprows=1)
             df = df[df.target != "neutral"]  # removes neutral
 
-            print("Printing target:::", df.target)
-            print("Printing unique", df.target.unique())
-            print('')
+            positive = df[df['target'] == "positive"]
+            negative = df[df['target'] == "negative"]
+
+            if len(positive) != len(negative):
+                positive = positive[:diff(positive, negative)]
+                negative = negative[:diff(positive, negative)]
+                df = pd.concat(positive, negative)
+
 
 
         elif filename == "Reddit_data.csv":
@@ -124,9 +153,14 @@ def amazing():
             df.target = df.target.apply(lambda x: decode_sentiment(x))
             df = df[df.target != "neutral"]  # removes neutral
 
-            print("Printing target:::", df.target)
-            print("Printing unique", df.target.unique())
-            print('')
+            positive = df[df['target'] == "positive"]
+            negative = df[df['target'] == "negative"]
+
+            if len(positive) != len(negative):
+                positive = positive[:diff(positive, negative)]
+                negative = negative[:diff(positive, negative)]
+                df = pd.concat(positive, negative)
+
 
 
         elif filename == "Steam_train.csv":
@@ -136,9 +170,14 @@ def amazing():
             df.target = df.target.apply(lambda x: decode_sentiment(x))
             df = df[df.target != "neutral"]  # removes neutral
 
-            print("Printing target:::", df.target)
-            print("Printing unique", df.target.unique())
-            print('')
+            positive = df[df['target'] == "positive"]
+            negative = df[df['target'] == "negative"]
+
+            if len(positive) != len(negative):
+                positive = positive[:diff(positive, negative)]
+                negative = negative[:diff(positive, negative)]
+                df = pd.concat(positive, negative)
+
 
 
         elif filename == "Twitter_data.csv":
@@ -148,9 +187,13 @@ def amazing():
             df.target = df.target.apply(lambda x: decode_sentiment(x))
             df = df[df.target != "neutral"]  # removes neutral
 
-            print("Printing target:::", df.target)
-            print("Printing unique", df.target.unique())
-            print('')
+            positive = df[df['target'] == "positive"]
+            negative = df[df['target'] == "negative"]
+
+            if len(positive) != len(negative):
+                positive = positive[:diff(positive, negative)]
+                negative = negative[:diff(positive, negative)]
+                df = pd.concat(positive, negative)
 
         #elif filename == "sentiment140.csv":
         #    decode_map = {0: "NEGATIVE", 2: "NEUTRAL", 4: "POSITIVE"}
