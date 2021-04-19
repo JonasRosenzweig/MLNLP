@@ -402,7 +402,7 @@ def amazing():
                 os.chdir(save_path)
 
                 fig1 = plt.gcf()
-                fig1.savefig(filename + "tr+val acc" + ts + '.png')
+                fig1.savefig("tr+val acc" + filename + ts + '.png')
                 plt.figure()
                 plt.plot(epochs, loss, 'b', label='Training loss')
                 plt.plot(epochs, val_loss, 'r', label='Validation loss')
@@ -411,7 +411,7 @@ def amazing():
 
                 #plt.figure()
                 fig2 = plt.gcf()
-                fig2.savefig(filename + "tr+val loss" + ts + '.png')
+                fig2.savefig("tr+val loss" + filename + ts + '.png')
 
                 plt.show()
 
@@ -472,9 +472,14 @@ def amazing():
                 plot_confusion_matrix(cnf_matrix, classes=dfTrain.target.unique(), title="Confusion matrix")
                 fig3 = plt.gcf()
                 plt.show()
-                fig3.savefig(filename + "cm" + ts + '.png')
+                fig3.savefig("cm" + filename + ts + '.png')
                 print(classification_report(y_test_1d, y_pred_1d))
                 accuracy_score(y_test_1d, y_pred_1d)
+                print("printing acc score: ", accuracy_score)
+
+                report = classification_report(y_test_1d, y_pred_1d, output_dict=True)
+                reportData = pd.DataFrame(report).transpose()
+                reportData.to_csv("savingInfo.csv", index=False)
 
             return model, model_1, tokenizer
 
