@@ -36,6 +36,7 @@ import itertools
 import MethodHandler
 
 import tensorflow as tf
+
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 # Initializing paramteters:
@@ -51,13 +52,13 @@ W2V_MIN_COUNT = 10
 
 # KERAS
 SEQUENCE_LENGTH = 300
-EPOCHS = 8
-BATCH_SIZE = 1024
+EPOCHS = 1
+BATCH_SIZE = 2048
 
 # SENTIMENT
-POSITIVE = "POSITIVE"
-NEGATIVE = "NEGATIVE"
-NEUTRAL = "NEUTRAL"
+POSITIVE = "positive"
+NEGATIVE = "negative"
+NEUTRAL = "neutral"
 SENTIMENT_THRESHOLDS = (0.4, 0.7)
 
 # DATASET
@@ -66,12 +67,11 @@ DATASET_ENCODING = "ISO-8859-1"
 
 # dataset paths
 
-dirPath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Data\\Labelled" #Jonas path
-#dirPath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Data\\Labelled" #Hammi path
+# dirPath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Data\\Labelled" #Jonas path
+dirPath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Data\\Labelled"  # Hammi path
 
 
 def amazing():
-
     def decode_sentiment(label):
         return decode_map[int(label)]
 
@@ -195,7 +195,7 @@ def amazing():
                 negative = negative[:diff(positive, negative)]
                 df = pd.concat([positive, negative])
 
-        #elif filename == "sentiment140.csv":
+        # elif filename == "sentiment140.csv":
         #    decode_map = {0: "NEGATIVE", 2: "NEUTRAL", 4: "POSITIVE"}
         #    DATASET_COLUMNS = ["target", "ids", "date", "flag", "user", "text"]
         #    df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS)
@@ -349,7 +349,8 @@ def amazing():
             modelList.append(model_2)
 
             # not sure what dis does
-            callbacks = [ReduceLROnPlateau(monitor='val_loss', patience=5, cooldown=0),  # Needs to be looked into****ØØØØØ
+            callbacks = [ReduceLROnPlateau(monitor='val_loss', patience=5, cooldown=0),
+                         # Needs to be looked into****ØØØØØ
                          EarlyStopping(monitor='val_accuracy', min_delta=1e-4, patience=5),
                          EarlyStopping(monitor='val_loss', min_delta=0.0001)]
 
@@ -419,8 +420,11 @@ def amazing():
 
             # EVAL PARAMS FOR CONFUSION MATRIX
             y_pred_1d = []
-            y_test_1d = list(dfTrain.target)
-            predictions = model.predict(x_test, verbose=1, batch_size=8000)
+            #            y_test_1d = list(dfTrain.target)
+            y_test_1d = list(dfVal.target)
+
+            # predictions = model.predict(x_test, verbose=1, batch_size=8000)
+            predictions = model.predict(x_val, verbose=1, batch_size=8000)
             y_pred_1d = [decode_sentiment(score, include_neutral=False) for score in predictions]
 
             def plot_confusion_matrix(cm, classes,
@@ -450,13 +454,14 @@ def amazing():
                 plt.ylabel('True label', fontsize=25)
                 plt.xlabel('Predicted label', fontsize=25)
 
+            cnf_matrix = confusion_matrix(y_test_1d, y_pred_1d, labels=["positive", "negative"])
+            print("printing cnf_matrix...",cnf_matrix)
+            plt.figure(figsize=(12, 12))
+            plot_confusion_matrix(cnf_matrix, classes=dfTrain.target.unique(), title="Confusion matrix")
+            plt.show()
+            print(classification_report(y_test_1d, y_pred_1d))
+            accuracy_score(y_test_1d, y_pred_1d)
+
             return model, model_1, tokenizer
+
         amazing2()
-
-
-# cnf_matrix = confusion_matrix(y_test_1d, y_pred_1d)
-# plt.figure(figsize=(12, 12))
-# plot_confusion_matrix(cnf_matrix, classes=dfTrain.target.unique(), title="Confusion matrix")
-# plt.show()
-# print(classification_report(y_test_1d, y_pred_1d))
-# accuracy_score(y_test_1d, y_pred_1d)
