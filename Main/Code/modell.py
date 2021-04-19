@@ -354,10 +354,10 @@ def amazing():
             modelList.append(model_2)
 
             # not sure what dis does
-            callbacks = [ReduceLROnPlateau(monitor='val_loss', patience=5, cooldown=0),
-                         # Needs to be looked into****ØØØØØ
-                         EarlyStopping(monitor='val_accuracy', min_delta=1e-4, patience=5),
-                         EarlyStopping(monitor='val_loss', min_delta=0.0001)]
+            callbacks = [EarlyStopping(monitor='val_accuracy', min_delta=0.01, patience=2)]
+
+            #EarlyStopping(monitor='val_loss', min_delta=0.0001)
+            #ReduceLROnPlateau(monitor='val_loss', patience=5, cooldown=0)
 
             def trainAndEval(modelName):
                 modelName.summary()
@@ -404,7 +404,7 @@ def amazing():
                 os.chdir(save_path)
 
                 fig1 = plt.gcf()
-                fig1.savefig("tr+val_acc_" + filename + ts + '.png')
+                fig1.savefig(model.name + "tr+val_acc_" + filename + ts + '.png')
                 plt.figure()
                 plt.plot(epochs, loss, 'b', label='Training loss')
                 plt.plot(epochs, val_loss, 'r', label='Validation loss')
@@ -413,7 +413,7 @@ def amazing():
 
                 # plt.figure()
                 fig2 = plt.gcf()
-                fig2.savefig("tr+val_loss" + filename + ts + '.png')
+                fig2.savefig(model.name + "tr+val_loss" + filename + ts + '.png')
 
                 plt.show()
 
