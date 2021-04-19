@@ -401,17 +401,18 @@ def amazing():
                 save_path = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Code\\save"
                 os.chdir(save_path)
 
+                fig1 = plt.gcf()
+                fig1.savefig(filename + "tr+val acc" + ts + '.png')
                 plt.figure()
-
-                plt.savefig(filename + ts + '.png')
-
                 plt.plot(epochs, loss, 'b', label='Training loss')
                 plt.plot(epochs, val_loss, 'r', label='Validation loss')
                 plt.title('Training and validation loss')
                 plt.legend()
 
-                plt.figure()
-                plt.savefig(filename + ts + '.png')
+                #plt.figure()
+                fig2 = plt.gcf()
+                fig2.savefig(filename + "tr+val loss" + ts + '.png')
+
                 plt.show()
 
 
@@ -469,8 +470,9 @@ def amazing():
                 print("printing cnf_matrix...",cnf_matrix)
                 plt.figure(figsize=(12, 12))
                 plot_confusion_matrix(cnf_matrix, classes=dfTrain.target.unique(), title="Confusion matrix")
+                fig3 = plt.gcf()
                 plt.show()
-                plt.savefig(filename + ts + '.png')
+                fig3.savefig(filename + "cm" + ts + '.png')
                 print(classification_report(y_test_1d, y_pred_1d))
                 accuracy_score(y_test_1d, y_pred_1d)
 
