@@ -113,7 +113,7 @@ def amazing():
             if len(positive) != len(negative):
                 positive = positive[:diff(positive, negative)]
                 negative = negative[:diff(positive, negative)]
-                df = pd.concat(positive, negative)
+                df = pd.concat([positive, negative])
 
 
 
@@ -128,7 +128,7 @@ def amazing():
             if len(positive) != len(negative):
                 positive = positive[:diff(positive, negative)]
                 negative = negative[:diff(positive, negative)]
-                df = pd.concat(positive, negative)
+                df = pd.concat([positive, negative])
 
 
         elif filename == "IMDB_Dataset.csv":
@@ -142,7 +142,7 @@ def amazing():
             if len(positive) != len(negative):
                 positive = positive[:diff(positive, negative)]
                 negative = negative[:diff(positive, negative)]
-                df = pd.concat(positive, negative)
+                df = pd.concat([positive, negative])
 
 
 
@@ -159,7 +159,7 @@ def amazing():
             if len(positive) != len(negative):
                 positive = positive[:diff(positive, negative)]
                 negative = negative[:diff(positive, negative)]
-                df = pd.concat(positive, negative)
+                df = pd.concat([positive, negative])
 
 
 
@@ -176,7 +176,7 @@ def amazing():
             if len(positive) != len(negative):
                 positive = positive[:diff(positive, negative)]
                 negative = negative[:diff(positive, negative)]
-                df = pd.concat(positive, negative)
+                df = pd.concat([positive, negative])
 
 
 
@@ -193,7 +193,7 @@ def amazing():
             if len(positive) != len(negative):
                 positive = positive[:diff(positive, negative)]
                 negative = negative[:diff(positive, negative)]
-                df = pd.concat(positive, negative)
+                df = pd.concat([positive, negative])
 
         #elif filename == "sentiment140.csv":
         #    decode_map = {0: "NEGATIVE", 2: "NEUTRAL", 4: "POSITIVE"}
