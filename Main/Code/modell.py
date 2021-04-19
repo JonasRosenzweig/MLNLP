@@ -473,7 +473,7 @@ def amazing():
                 plot_confusion_matrix(cnf_matrix, classes=dfTrain.target.unique(), title="Confusion matrix")
                 fig3 = plt.gcf()
                 plt.show()
-                fig3.savefig("cm_" + filename + ts + '.png')
+                fig3.savefig(model.name + "cm_" + filename + ts + '.png')
                 print(classification_report(y_test_1d, y_pred_1d))
                 accuracy_score(y_test_1d, y_pred_1d)
                 print("printing acc score: ", accuracy_score)
