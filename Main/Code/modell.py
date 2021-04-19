@@ -52,8 +52,8 @@ W2V_MIN_COUNT = 10
 
 # KERAS
 SEQUENCE_LENGTH = 300
-EPOCHS = 1
-BATCH_SIZE = 2048
+EPOCHS = 15
+BATCH_SIZE = 512
 
 # SENTIMENT
 POSITIVE = "positive"
@@ -211,11 +211,11 @@ def amazing():
             print(file)
         print("Open file:", dirPath + "\\" + filename)
         print("Dataset size:", len(df))
-        target_cnt = Counter(df.target)
+        #target_cnt = Counter(df.target)
 
-        plt.figure(figsize=(16, 8))
-        plt.bar(target_cnt.keys(), target_cnt.values())
-        plt.title("Dataset labels Distribution")
+        #plt.figure(figsize=(16, 8))
+        #plt.bar(target_cnt.keys(), target_cnt.values())
+        #plt.title("Dataset labels Distribution")
 
         def amazing2():
 
