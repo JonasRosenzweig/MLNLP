@@ -152,7 +152,7 @@ def amazing():
 
 
         elif filename == "Reddit_data.csv":
-            decode_map = {-1: "NEGATIVE", 0: "NEUTRAL", 1: "POSITIVE"}
+            decode_map = {-1: "negative", 0: "neutral", 1: "positive"}
             DATASET_COLUMNS = ["text", "target"]
             df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS, skiprows=1)
             df.target = df.target.apply(lambda x: decode_sentiment(x))
@@ -170,7 +170,7 @@ def amazing():
 
         elif filename == "Steam_train.csv":
             DATASET_COLUMNS = ["review_id", "title", "year", "text", "target"]
-            decode_map = {1: "NEGATIVE", 0: "POSITIVE"}
+            decode_map = {1: "negative", 0: "positive"}
             df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS, skiprows=1)
             df.target = df.target.apply(lambda x: decode_sentiment(x))
             df = df[df.target != "neutral"]  # removes neutral
@@ -404,7 +404,7 @@ def amazing():
                 os.chdir(save_path)
 
                 fig1 = plt.gcf()
-                fig1.savefig(model.name + "tr+val_acc_" + filename + ts + '.png')
+                fig1.savefig(model.name + "_tr+val_acc_" + filename + ts + '.png')
                 plt.figure()
                 plt.plot(epochs, loss, 'b', label='Training loss')
                 plt.plot(epochs, val_loss, 'r', label='Validation loss')
@@ -413,7 +413,7 @@ def amazing():
 
                 # plt.figure()
                 fig2 = plt.gcf()
-                fig2.savefig(model.name + "tr+val_loss" + filename + ts + '.png')
+                fig2.savefig(model.name + "_tr+val_loss" + filename + ts + '.png')
 
                 plt.show()
 
@@ -480,9 +480,9 @@ def amazing():
 
                 report = classification_report(y_test_1d, y_pred_1d, output_dict=True)
                 reportData = pd.DataFrame(report).transpose()
-                reportDataName = model.name + "classificationReport_" + filename + ts +".csv"
+                reportDataName = model.name + "_classificationReport_" + filename + ts +".csv"
                 reportData.to_csv(reportDataName, index=False)
 
-            return model, model_1, tokenizer
+            return model, model_1, model_2, tokenizer
 
         amazing2()
