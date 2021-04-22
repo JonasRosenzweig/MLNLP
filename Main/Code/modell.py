@@ -52,8 +52,8 @@ W2V_MIN_COUNT = 10
 
 # KERAS
 SEQUENCE_LENGTH = 300
-EPOCHS = 15
-BATCH_SIZE = 512
+EPOCHS = 1
+BATCH_SIZE = 1024
 
 # SENTIMENT
 POSITIVE = "positive"
@@ -67,10 +67,10 @@ DATASET_ENCODING = "ISO-8859-1"
 
 # dataset paths
 
-dirPath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Data\\Labelled"  # Jonas path
-# dirPath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Data\\Labelled"  # Hammi path
-savepath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Code\\save"  # Jonas path
-# savepath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Code\\save" # Hammi path
+#dirPath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Data\\Labelled"  # Jonas path
+dirPath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Data\\Labelled"  # Hammi path
+#savepath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Code\\save"  # Jonas path
+savepath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Code\\save" # Hammi path
 
 ts = time.gmtime()
 ts = time.strftime("%Y-%m-%d_%H-%M-%S", ts)
@@ -120,7 +120,16 @@ def amazing():
                 negative = negative[:diff(positive, negative)]
                 df = pd.concat([positive, negative])
 
-
+        elif filename == "sentiment140.csv":
+            DATASET_COLUMNS = ["target", "id", "data", "flag", "user", "text"]
+            df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS, skiprows=1)
+            df = df[df.target != "neutral"]
+            positive = df[df['target'] == "positive"]
+            negative = df[df['target'] == "negative"]
+            if len(positive) != len(negative):
+                positive = positive[:diff(positive, negative)]
+                negative = negative[:diff(positive, negative)]
+                df = pd.concat([positive, negative])
 
         elif filename == "Financial_news_all-data.csv":
             DATASET_COLUMNS = ["target", "text"]
@@ -211,11 +220,12 @@ def amazing():
             print(file)
         print("Open file:", dirPath + "\\" + filename)
         print("Dataset size:", len(df))
-        #target_cnt = Counter(df.target)
 
-        #plt.figure(figsize=(16, 8))
-        #plt.bar(target_cnt.keys(), target_cnt.values())
-        #plt.title("Dataset labels Distribution")
+        # target_cnt = Counter(df.target)
+
+        # plt.figure(figsize=(16, 8))
+        # plt.bar(target_cnt.keys(), target_cnt.values())
+        # plt.title("Dataset labels Distribution")
 
         def amazing2():
 
@@ -356,8 +366,8 @@ def amazing():
             # not sure what dis does
             callbacks = [EarlyStopping(monitor='val_accuracy', min_delta=0.01, patience=2)]
 
-            #EarlyStopping(monitor='val_loss', min_delta=0.0001)
-            #ReduceLROnPlateau(monitor='val_loss', patience=5, cooldown=0)
+            # EarlyStopping(monitor='val_loss', min_delta=0.0001)
+            # ReduceLROnPlateau(monitor='val_loss', patience=5, cooldown=0)
 
             def trainAndEval(modelName):
                 modelName.summary()
@@ -373,20 +383,12 @@ def amazing():
                 return history, score
 
             for model in modelList:
+
                 history, score = trainAndEval(model)
                 MethodHandler.saveModel(model, tokenizer, filename)
-                # history = model.fit(x_train, y_train,
-                #                     batch_size=BATCH_SIZE,
-                #                     epochs=EPOCHS,
-                #                     validation_split=0.1, #???????????????
-                #                     verbose=1,
-                #                     callbacks=callbacks)
 
-                # score = model.evaluate(x_test, y_test, batch_size=BATCH_SIZE)
-                # print()
                 print("ACCURACY:", score[1])
                 print("LOSS:", score[0])
-
                 # Data Visualization for eval
                 acc = history.history['accuracy']
                 val_acc = history.history['val_accuracy']
@@ -431,15 +433,6 @@ def amazing():
                     else:
                         return NEGATIVE if score < 0.5 else POSITIVE
 
-                # EVAL PARAMS FOR CONFUSION MATRIX
-                y_pred_1d = []
-                #            y_test_1d = list(dfTrain.target)
-                y_test_1d = list(dfVal.target)
-
-                # predictions = model.predict(x_test, verbose=1, batch_size=8000)
-                predictions = model.predict(x_val, verbose=1, batch_size=8000)
-                y_pred_1d = [decode_sentiment(score, include_neutral=False) for score in predictions]
-
                 def plot_confusion_matrix(cm, classes,
                                           title='Confusion matrix',
                                           cmap=plt.cm.Blues):
@@ -467,21 +460,50 @@ def amazing():
                     plt.ylabel('True label', fontsize=25)
                     plt.xlabel('Predicted label', fontsize=25)
 
-                cnf_matrix = confusion_matrix(y_test_1d, y_pred_1d, labels=["positive", "negative"])
+                # EVAL PARAMS FOR CONFUSION MATRIX
+                y_test_val = list(dfVal.target)
+                predictions = model.predict(x_val, verbose=1, batch_size=8000)
+                y_pred_val = [decode_sentiment(score, include_neutral=False) for score in predictions]
+
+                cnf_matrix = confusion_matrix(y_test_val, y_pred_val, labels=["positive", "negative"])
+
                 # print("printing cnf_matrix...",cnf_matrix)
                 plt.figure(figsize=(12, 12))
                 plot_confusion_matrix(cnf_matrix, classes=dfTrain.target.unique(), title="Confusion matrix")
                 fig3 = plt.gcf()
                 plt.show()
-                fig3.savefig(model.name + "cm_" + filename + ts + '.png')
-                print(classification_report(y_test_1d, y_pred_1d))
-                accuracy_score(y_test_1d, y_pred_1d)
-                print("printing acc score: ", accuracy_score)
 
-                report = classification_report(y_test_1d, y_pred_1d, output_dict=True)
-                reportData = pd.DataFrame(report).transpose()
-                reportDataName = model.name + "_classificationReport_" + filename + ts +".csv"
+                fig3.savefig(model.name + "cm_val_" + filename + ts + '.png')
+
+                print(classification_report(y_test_val, y_pred_val))
+                score_acc = accuracy_score(y_test_val, y_pred_val)
+                print("printing acc score: ", score_acc)
+
+                report_val = classification_report(y_test_val, y_pred_val, output_dict=True)
+
+                reportData = pd.DataFrame(report_val).transpose()
+                reportDataName = model.name + "_classificationReport_val_" + filename + ts + ".csv"
                 reportData.to_csv(reportDataName, index=False)
+
+                def testing_metrics(model):
+                    y_test = list(dfTest.target)
+                    predictions = model.predict(x_test)
+                    y_pred = [decode_sentiment(score, include_neutral=False) for score in predictions]
+
+                    cnf_matrix_test = confusion_matrix(y_test, y_pred, labels=["positive", "negative"])
+
+                    plt.figure(figsize=(12, 12))
+                    plot_confusion_matrix(cnf_matrix_test, classes=dfTrain.target.unique(), title="Confusion matrix")
+                    fig_cm_test = plt.gcf()
+                    plt.show()
+
+                    fig_cm_test.savefig(model.name + "cm_test_" + filename + ts + '.png')
+
+                    report_test = classification_report(y_test, y_pred, output_dict=True)
+
+                    reportData = pd.DataFrame(report_test).transpose()
+                    reportDataName = model.name + "_classificationReport_test_" + filename + ts + ".csv"
+                    reportData.to_csv(reportDataName, index=False)
 
             return model, model_1, model_2, tokenizer
 
