@@ -9,7 +9,8 @@ import modell
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, roc_curve, roc_auc_score, precision_recall_curve, f1_score, auc
 import time
 
-savepath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Code\\save" #Jonas path
+#savepath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Code\\save" #Jonas path home desktop
+savepath = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Code\\save" #Jonas path work
 #savepath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Code\\save" # Hammi path
 
 def metrics():
