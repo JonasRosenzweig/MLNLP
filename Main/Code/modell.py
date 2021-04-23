@@ -52,8 +52,8 @@ W2V_MIN_COUNT = 10
 
 # KERAS
 SEQUENCE_LENGTH = 300
-EPOCHS = 1
-BATCH_SIZE = 1024
+EPOCHS = 15
+BATCH_SIZE = 4096
 
 # SENTIMENT
 POSITIVE = "positive"
@@ -68,9 +68,11 @@ DATASET_ENCODING = "ISO-8859-1"
 # dataset paths
 
 #dirPath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Data\\Labelled"  # Jonas path
-dirPath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Data\\Labelled"  # Hammi path
+#dirPath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Data\\Labelled"  # Hammi path
+dirPath = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Data\\Labelled" #Jonas path work
 #savepath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Code\\save"  # Jonas path
-savepath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Code\\save" # Hammi path
+#savepath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Code\\save" # Hammi path
+savepath = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Code\\save" #Jonas path work
 
 ts = time.gmtime()
 ts = time.strftime("%Y-%m-%d_%H-%M-%S", ts)
@@ -121,9 +123,10 @@ def amazing():
                 df = pd.concat([positive, negative])
 
         elif filename == "sentiment140.csv":
-            DATASET_COLUMNS = ["target", "id", "data", "flag", "user", "text"]
+            DATASET_COLUMNS = ["target", "id", "date", "flag", "user", "text"]
             df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS, skiprows=1)
             df = df[df.target != "neutral"]
+            print(df)
             positive = df[df['target'] == "positive"]
             negative = df[df['target'] == "negative"]
             if len(positive) != len(negative):
@@ -352,16 +355,16 @@ def amazing():
                             metrics=['accuracy'])
             modelList.append(model_1)
 
-            model_2 = Sequential(name='model_2')
-            model_2.add(embedding_layer)
-            model_2.add(SpatialDropout1D(0.7))
-            model_2.add(LSTM(64, dropout=0.7, recurrent_dropout=0.7))
-            model_2.add(Dense(1, activation='softmax'))
-
-            model_2.compile(optimizer='adam',
-                            loss='categorical_crossentropy',
-                            metrics=['accuracy'])
-            modelList.append(model_2)
+            # model_2 = Sequential(name='model_2')
+            # model_2.add(embedding_layer)
+            # model_2.add(SpatialDropout1D(0.7))
+            # model_2.add(LSTM(64, dropout=0.7, recurrent_dropout=0.7))
+            # model_2.add(Dense(1, activation='softmax'))
+            #
+            # model_2.compile(optimizer='adam',
+            #                 loss='categorical_crossentropy',
+            #                 metrics=['accuracy'])
+            # modelList.append(model_2)
 
             # not sure what dis does
             callbacks = [EarlyStopping(monitor='val_accuracy', min_delta=0.01, patience=2)]
@@ -505,6 +508,6 @@ def amazing():
                     reportDataName = model.name + "_classificationReport_test_" + filename + ts + ".csv"
                     reportData.to_csv(reportDataName, index=False)
 
-            return model, model_1, model_2, tokenizer
+            return model, model_1, tokenizer
 
         amazing2()
