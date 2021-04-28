@@ -12,7 +12,9 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
-from keras.layers import Activation, Dense, Dropout, Embedding, Flatten, Conv1D, MaxPooling1D, LSTM, SpatialDropout1D
+from keras.layers import GRU, Activation, Dense, Dropout, Embedding, Flatten, Conv1D, MaxPooling1D, LSTM, \
+    SpatialDropout1D, Bidirectional, TimeDistributed
+from keras.losses import binary_crossentropy
 from keras import utils
 from keras.callbacks import ReduceLROnPlateau, EarlyStopping
 
@@ -37,8 +39,9 @@ import MethodHandler
 
 import tensorflow as tf
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-
+#os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+os.environ['TF_XLA_FLAGS'] = '--tf_xla_enable_xla_devices'
+print("GPUs: ", len(tf.config.experimental.list_physical_devices('GPU')))
 # Initializing paramteters:
 
 # TEXT CLEANING regex
@@ -53,7 +56,7 @@ W2V_MIN_COUNT = 10
 # KERAS
 SEQUENCE_LENGTH = 300
 EPOCHS = 15
-BATCH_SIZE = 4096
+BATCH_SIZE = 512
 
 # SENTIMENT
 POSITIVE = "positive"
@@ -62,17 +65,17 @@ NEUTRAL = "neutral"
 SENTIMENT_THRESHOLDS = (0.4, 0.7)
 
 # DATASET
-DATASET_COLUMNS = ["target", "ids", "date", "flag", "user", "text"]
+# DATASET_COLUMNS = ["target", "ids", "date", "flag", "user", "text"]
 DATASET_ENCODING = "ISO-8859-1"
 
 # dataset paths
 
-#dirPath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Data\\Labelled"  # Jonas path
-#dirPath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Data\\Labelled"  # Hammi path
-dirPath = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Data\\Labelled" #Jonas path work
-#savepath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Code\\save"  # Jonas path
-#savepath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Code\\save" # Hammi path
-savepath = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Code\\save" #Jonas path work
+# dirPath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Data\\Labelled"  # Jonas path
+# dirPath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Data\\Labelled"  # Hammi path
+dirPath = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Data\\already_run"  # Jonas path work
+# savepath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Code\\save"  # Jonas path
+# savepath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Code\\save" # Hammi path
+savepath = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Code\\save"  # Jonas path work
 
 ts = time.gmtime()
 ts = time.strftime("%Y-%m-%d_%H-%M-%S", ts)
@@ -124,9 +127,11 @@ def amazing():
 
         elif filename == "sentiment140.csv":
             DATASET_COLUMNS = ["target", "id", "date", "flag", "user", "text"]
+            decode_map = {0: "negative", 4: "positive"}
             df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS, skiprows=1)
+            df.target = df.target.apply(lambda x: decode_sentiment(x))
             df = df[df.target != "neutral"]
-            print(df)
+
             positive = df[df['target'] == "positive"]
             negative = df[df['target'] == "negative"]
             if len(positive) != len(negative):
@@ -163,8 +168,9 @@ def amazing():
 
 
 
+
         elif filename == "Reddit_data.csv":
-            decode_map = {-1: "negative", 0: "neutral", 1: "positive"}
+            decode_map = {-1: "negative", 1: "positive"}
             DATASET_COLUMNS = ["text", "target"]
             df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS, skiprows=1)
             df.target = df.target.apply(lambda x: decode_sentiment(x))
@@ -199,7 +205,7 @@ def amazing():
 
         elif filename == "Twitter_data.csv":
             DATASET_COLUMNS = ["text", "target"]
-            decode_map = {-1: "NEGATIVE", 0: "NEUTRAL", 1: "POSITIVE"}
+            decode_map = {-1: "negative", 1: "positive"}
             df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS, skiprows=1)
             df.target = df.target.apply(lambda x: decode_sentiment(x))
             df = df[df.target != "neutral"]  # removes neutral
@@ -314,6 +320,7 @@ def amazing():
             y_train = y_train.reshape(-1, 1)
             y_test = y_test.reshape(-1, 1)
             y_val = y_val.reshape(-1, 1)
+
             # print("x_train", x_train.shape)
             # print("y_train", y_train.shape)
             # print()
@@ -333,28 +340,29 @@ def amazing():
             # Initialize sequential model (keras)
             modelList = []
 
-            model = Sequential(name='model')
-            model.add(embedding_layer)
-            model.add(Dropout(0.5))
-            model.add(LSTM(100, dropout=0.2, recurrent_dropout=0.2))
-            model.add(Dense(1, activation='sigmoid'))
+            model_0 = Sequential(name='OG_LSTM')
+            model_0.add(embedding_layer)
+            model_0.add(Dropout(0.5))
+            model_0.add(LSTM(100, dropout=0.2, recurrent_dropout=0.2))
+            model_0.add(Dense(1, activation='sigmoid'))
 
-            model.compile(loss='binary_crossentropy',
-                          optimizer="adam",
-                          metrics=['accuracy'])
-            modelList.append(model)
-            # Model_1
-            model_1 = Sequential(name='model_1')
-            model_1.add(embedding_layer)
-            model_1.add(Dropout(0.5))
-            model_1.add(LSTM(100, dropout=0.2, recurrent_dropout=0.2))
-            model_1.add(Dense(1, activation='relu'))
-
-            model_1.compile(loss='binary_crossentropy',
-                            optimizer="adam",
-                            metrics=['accuracy'])
-            modelList.append(model_1)
-
+            model_0.compile(loss='binary_crossentropy',
+                           optimizer="adam",
+                           metrics=['accuracy'])
+            modelList.append(model_0)
+            #
+            #
+            # model_1 = Sequential(name='model_1')
+            # model_1.add(embedding_layer)
+            # model_1.add(Dropout(0.5))
+            # model_1.add(LSTM(100, dropout=0.2, recurrent_dropout=0.2))
+            # model_1.add(Dense(1, activation='relu'))
+            #
+            # model_1.compile(loss='binary_crossentropy',
+            #                 optimizer="adam",
+            #                 metrics=['accuracy'])
+            # modelList.append(model_1)
+            #
             # model_2 = Sequential(name='model_2')
             # model_2.add(embedding_layer)
             # model_2.add(SpatialDropout1D(0.7))
@@ -366,8 +374,52 @@ def amazing():
             #                 metrics=['accuracy'])
             # modelList.append(model_2)
 
+            # model_3 = Sequential(name='GRU_1')
+            # model_3.add(embedding_layer)
+            # model_3.add(Dropout(0.5))
+            # model_3.add(GRU(100))
+            # model_3.add(Dense(1, activation='sigmoid'))
+            # model_3.compile(loss='binary_crossentropy',
+            #                 optimizer='adam',
+            #                 metrics=['accuracy'])
+            # modelList.append(model_3)
+
+            model_3 = Sequential(name='LSTM_Bidirectional_1')
+            model_3.add(embedding_layer)
+            model_3.add(Dropout(0.5))
+            model_3.add(Bidirectional(LSTM(100, dropout=0.2, recurrent_dropout=0.2)))
+            model_3.add(Dense(1, activation='sigmoid'))
+
+            model_3.compile(loss='binary_crossentropy',
+                            optimizer="adam",
+                            metrics=['accuracy'])
+            modelList.append(model_3)
+
+            model_4 = Sequential(name='GRU_1')
+            model_4.add(embedding_layer)
+            model_4.add(Dropout(0.5))
+            model_4.add(GRU(100, dropout=0.2, recurrent_dropout=0.2))
+            model_4.add(Dense(1, activation='sigmoid'))
+            model_4.compile(loss='binary_crossentropy',
+                            optimizer='adam',
+                            metrics=['accuracy'])
+            modelList.append(model_4)
+
+            # model_5 = Sequential(name='LSTM_Bidirectional_1')
+            # model_5.add(embedding_layer)
+            # model_5.add(Bidirectional(LSTM(100)))
+            # model_5.add(TimeDistributed(Dense(1, activation='sigmoid')))
+            # model_5.compile(loss='binary_crossentropy',
+            #                 optimizer='adam',
+            #                 metrics=['accuracy'])
+            # modelList.append(model_5)
+
+
+
+
+
             # not sure what dis does
-            callbacks = [EarlyStopping(monitor='val_accuracy', min_delta=0.01, patience=2)]
+            callbacks = [EarlyStopping(monitor='accuracy', min_delta=0.0001, patience=5)]
 
             # EarlyStopping(monitor='val_loss', min_delta=0.0001)
             # ReduceLROnPlateau(monitor='val_loss', patience=5, cooldown=0)
@@ -380,7 +432,7 @@ def amazing():
                                         validation_split=0.1,
                                         verbose=1,
                                         callbacks=callbacks)
-                # EVALUATE WITH THE EVALUATION SET:
+                # EVALUATE WITH THE EVALUATION SET: (internal eval)
                 score = modelName.evaluate(x_val, y_val, batch_size=BATCH_SIZE)
                 print(modelName.name, "done training - ...")
                 return history, score
@@ -465,7 +517,7 @@ def amazing():
 
                 # EVAL PARAMS FOR CONFUSION MATRIX
                 y_test_val = list(dfVal.target)
-                predictions = model.predict(x_val, verbose=1, batch_size=8000)
+                predictions = model.predict(x_val, verbose=1, batch_size=BATCH_SIZE)
                 y_pred_val = [decode_sentiment(score, include_neutral=False) for score in predictions]
 
                 cnf_matrix = confusion_matrix(y_test_val, y_pred_val, labels=["positive", "negative"])
@@ -488,26 +540,9 @@ def amazing():
                 reportDataName = model.name + "_classificationReport_val_" + filename + ts + ".csv"
                 reportData.to_csv(reportDataName, index=False)
 
-                def testing_metrics(model):
-                    y_test = list(dfTest.target)
-                    predictions = model.predict(x_test)
-                    y_pred = [decode_sentiment(score, include_neutral=False) for score in predictions]
 
-                    cnf_matrix_test = confusion_matrix(y_test, y_pred, labels=["positive", "negative"])
 
-                    plt.figure(figsize=(12, 12))
-                    plot_confusion_matrix(cnf_matrix_test, classes=dfTrain.target.unique(), title="Confusion matrix")
-                    fig_cm_test = plt.gcf()
-                    plt.show()
-
-                    fig_cm_test.savefig(model.name + "cm_test_" + filename + ts + '.png')
-
-                    report_test = classification_report(y_test, y_pred, output_dict=True)
-
-                    reportData = pd.DataFrame(report_test).transpose()
-                    reportDataName = model.name + "_classificationReport_test_" + filename + ts + ".csv"
-                    reportData.to_csv(reportDataName, index=False)
-
-            return model, model_1, tokenizer
+            #return model, model_1, model_2, tokenizer
+            return model_0, model_3, model_4, tokenizer
 
         amazing2()

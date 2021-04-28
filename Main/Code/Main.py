@@ -1,5 +1,5 @@
 import MethodHandler
-
+import tensorflow as tf
 # MethodHandler.loadModel()
 #
 # model = MethodHandler.loadModel.model
@@ -10,12 +10,16 @@ import MethodHandler
 
 # MODEL TRAINED WITHOUT stems
 
+gpu_options = tf.compat.v1.GPUOptions(per_process_gpu_memory_fraction=0.8)
+
+
+with tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(gpu_options=gpu_options)) as sess:
 
 #train model:
-trainObj = MethodHandler.trainModel()
+    trainObj = MethodHandler.trainModel()
 
-m = trainObj[0]
-m_1 = trainObj[1]
-t = trainObj[2]
+    m = trainObj[0]
+    m_1 = trainObj[1]
+    t = trainObj[2]
 
 
