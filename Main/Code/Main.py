@@ -10,7 +10,7 @@ import tensorflow as tf
 
 # MODEL TRAINED WITHOUT stems
 
-gpu_options = tf.compat.v1.GPUOptions(per_process_gpu_memory_fraction=0.8)
+gpu_options = tf.compat.v1.GPUOptions(per_process_gpu_memory_fraction=0.3)
 
 
 with tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(gpu_options=gpu_options)) as sess:

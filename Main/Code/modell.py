@@ -55,7 +55,7 @@ W2V_MIN_COUNT = 10
 
 # KERAS
 SEQUENCE_LENGTH = 300
-EPOCHS = 15
+EPOCHS = 100
 BATCH_SIZE = 512
 
 # SENTIMENT
@@ -72,7 +72,7 @@ DATASET_ENCODING = "ISO-8859-1"
 
 # dirPath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Data\\Labelled"  # Jonas path
 # dirPath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Data\\Labelled"  # Hammi path
-dirPath = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Data\\already_run"  # Jonas path work
+dirPath = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Data\\manually_labelled"  # Jonas path work
 # savepath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Code\\save"  # Jonas path
 # savepath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Code\\save" # Hammi path
 savepath = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Code\\save"  # Jonas path work
@@ -132,6 +132,16 @@ def amazing():
             df.target = df.target.apply(lambda x: decode_sentiment(x))
             df = df[df.target != "neutral"]
 
+            positive = df[df['target'] == "positive"]
+            negative = df[df['target'] == "negative"]
+            if len(positive) != len(negative):
+                positive = positive[:diff(positive, negative)]
+                negative = negative[:diff(positive, negative)]
+                df = pd.concat([positive, negative])
+
+        elif filename == "Scraped_merged_manually_labelled.csv":
+            DATASET_COLUMNS = ["text", "Ticks", "target", "Score", "Date", "URL"]
+            df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS, skiprows=1)
             positive = df[df['target'] == "positive"]
             negative = df[df['target'] == "negative"]
             if len(positive) != len(negative):
@@ -539,6 +549,26 @@ def amazing():
                 reportData = pd.DataFrame(report_val).transpose()
                 reportDataName = model.name + "_classificationReport_val_" + filename + ts + ".csv"
                 reportData.to_csv(reportDataName, index=False)
+
+                def testing_metrics(model):
+                    y_test = list(df.target)
+                    predictions = model.predict(x_test)
+                    y_pred = [decode_sentiment(score, include_neutral=False) for score in predictions]
+
+                    cnf_matrix_test = confusion_matrix(y_test, y_pred, labels=["positive", "negative"])
+
+                    plt.figure(figsize=(12, 12))
+                    plot_confusion_matrix(cnf_matrix_test, classes=df.target.unique(), title="Confusion matrix")
+                    fig_cm_test = plt.gcf()
+                    plt.show()
+
+                    fig_cm_test.savefig(model.name + "cm_test_" + filename + ts + '.png')
+
+                    report_test = classification_report(y_test, y_pred, output_dict=True)
+
+                    reportData = pd.DataFrame(report_test).transpose()
+                    reportDataName = model.name + "_classificationReport_test_" + filename + ts + ".csv"
+                    reportData.to_csv(reportDataName, index=False)
 
 
 

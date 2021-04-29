@@ -53,14 +53,18 @@ def loadModel(path):
     #w2v_model = Word2Vec.load(path + 'model1.w2v')
 
     model = load_model(path)  # Create function attribute.
-    tokenizer = pickle.load(open(path, 'rb'))
+
 
     # x_test = pad_sequences(tokenizer.texts_to_sequences(['I love music']), maxlen=300)
     # score = model.predict([x_test])[0]
     # with open(path + 'tokenizer1.pkl', 'rb') as handle: tokenizer = pickle.load(handle)
     # with open(path + 'encoder1.pkl', 'rb') as handle: encoder = pickle.load(handle)
     # print(score)
-    return model, tokenizer
+    return model
+
+def loadTokenizer(path):
+    tokenizer = pickle.load(open(path, 'rb'))
+    return tokenizer
 
 
 # loadModel()
