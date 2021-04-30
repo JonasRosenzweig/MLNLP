@@ -109,7 +109,7 @@ for i in range(len(list_paths_model)):
     file = os.path.join(dirPath, filename)
 
     DATASET_COLUMNS = ["text", "Ticks", "target", "Score", "Date", "URL"]
-    df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS, skiprows=609)
+    df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS, skiprows=1)
     print(df['target'].unique())
     pred = []
     predScore = []
