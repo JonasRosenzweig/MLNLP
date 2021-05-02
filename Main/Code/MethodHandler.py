@@ -11,8 +11,8 @@ from sklearn.metrics import confusion_matrix, classification_report, accuracy_sc
 import time
 
 #savepath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Code\\save" #Jonas path home desktop
-#savepath = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Code\\save" #Jonas path work
-savepath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Code\\save" # Hammi path
+savepath = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Code\\save" #Jonas path work
+#savepath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Code\\save" # Hammi path
 
 def metrics():
     return

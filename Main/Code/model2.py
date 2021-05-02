@@ -71,11 +71,11 @@ DATASET_ENCODING = "ISO-8859-1"
 # dataset paths
 
 # dirPath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Data\\Labelled"  # Jonas path
-dirPath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Data\\Labelled"  # Hammi path
-# dirPath = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Data\\manually_labelled"  # Jonas path work
+#dirPath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Data\\Labelled"  # Hammi path
+dirPath = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Data\\Labelled"  # Jonas path work
 # savepath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Code\\save"  # Jonas path
-savepath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Code\\save"  # Hammi path
-# savepath = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Code\\save"  # Jonas path work
+#savepath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Code\\save"  # Hammi path
+savepath = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Code\\save"  # Jonas path work
 
 ts = time.gmtime()
 ts = time.strftime("%Y-%m-%d_%H-%M-%S", ts)
@@ -170,15 +170,6 @@ def amazing():
             df = pd.read_csv(file, encoding=DATASET_ENCODING, names=DATASET_COLUMNS, skiprows=1)
             df = df[df.target != "neutral"]  # removes neutral
             decode_map = {1: POSITIVE, 0: NEGATIVE}
-            def ffs(target):
-                for i in range(len(target)):
-                    if target[i] == POSITIVE:
-                        return 1
-                    elif target[i] == NEGATIVE:
-                        return 0
-                return target
-            df.target = ffs(df.target)
-            print(df.target.unique())
 
             positive = df[df['target'] == "positive"]
             negative = df[df['target'] == "negative"]
@@ -417,8 +408,12 @@ def amazing():
             # EarlyStopping(monitor='val_loss', min_delta=0.0001)
             # ReduceLROnPlateau(monitor='val_loss', patience=5, cooldown=0)
 
+            # evaldf = pd.read_csv(
+            #     'C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Data\\manually_labelled\\Scraped_merged_manually_labelled.csv',
+            #     names=['Comments', 'Ticks', 'Sentiment', 'Score', 'Date', 'Url'], skiprows=1)
+
             evaldf = pd.read_csv(
-                'C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Data\\manually_labelled\\Scraped_merged_manually_labelled.csv',
+                'C:\\Users\\mail\\PycharmProjects\\MLNLP\\Main\\Data\\manually_labelled\\Scraped_merged_manually_labelled.csv',
                 names=['Comments', 'Ticks', 'Sentiment', 'Score', 'Date', 'Url'], skiprows=1)
 
             evaldf_val = evaldf[:int((len(evaldf) * 0.4))]
@@ -571,7 +566,7 @@ def amazing():
                     reportDataName = model.name + "_classificationReport_test_" + filename + ts + ".csv"
                     reportData.to_csv(reportDataName, index=False)
 
-                testing_metrics(model)
+                #testing_metrics(model)
             # return model, model_1, model_2, tokenizer
             return model_0, tokenizer  # model_3, model_4,
 
