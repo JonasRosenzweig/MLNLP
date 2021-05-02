@@ -6,18 +6,19 @@ from gensim.models import Word2Vec
 import pickle
 import pandas as pd
 import modell
+import model2
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, roc_curve, roc_auc_score, precision_recall_curve, f1_score, auc
 import time
 
 #savepath = "C:\\Users\\Jonas\\PycharmProjects\\MLNLP\\Main\\Code\\save" #Jonas path home desktop
-savepath = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Code\\save" #Jonas path work
-#savepath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Code\\save" # Hammi path
+#savepath = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Code\\save" #Jonas path work
+savepath = "C:\\Users\\HE400\\PycharmProjects\\MLNLP_main\\Main\\Code\\save" # Hammi path
 
 def metrics():
     return
 
 def trainModel():
-    amazing_obj = modell.amazing()
+    amazing_obj = model2.amazing() #modell
     m = amazing_obj[0]
     m_1 = amazing_obj[1]
     m_2 = amazing_obj[2]

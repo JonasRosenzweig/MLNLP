@@ -10,16 +10,20 @@ import tensorflow as tf
 
 # MODEL TRAINED WITHOUT stems
 
-gpu_options = tf.compat.v1.GPUOptions(per_process_gpu_memory_fraction=0.3)
-
-
-with tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(gpu_options=gpu_options)) as sess:
-
-#train model:
-    trainObj = MethodHandler.trainModel()
-
-    m = trainObj[0]
-    m_1 = trainObj[1]
-    t = trainObj[2]
-
-
+# gpu_options = tf.compat.v1.GPUOptions(per_process_gpu_memory_fraction=0.3)
+#
+#
+# with tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(gpu_options=gpu_options)) as sess:
+#
+# #train model:
+#     trainObj = MethodHandler.trainModel()
+#
+#     m = trainObj[0]
+#     m_1 = trainObj[1]
+#     t = trainObj[2]
+print('training')
+trainObj = MethodHandler.trainModel()
+print('done!')
+m = trainObj[0]
+m_1 = trainObj[1]
+t = trainObj[2]
