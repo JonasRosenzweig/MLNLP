@@ -31,22 +31,10 @@ import itertools
 # Tensorflow
 import tensorflow as tf
 
-# os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # Disable CUDA for testing, comment out to enable
-# debugging GPU:
-# os.environ['TF_XLA_FLAGS'] = '--tf_xla_enable_xla_devices'
-# print("GPUs: ", len(tf.config.experimental.list_physical_devices('GPU')))
-# PARAMS
 EPOCHS = 35
 DATASIZE = 500000
-# Directory
-# dirPath = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Data\\Labelled"
-# savepathMetrics = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Code\\save\\FinalTrainingMetrics"
-# savepathModels = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Code\\save\\FinalTrainingModels"
+
 filename = "Combined_data.csv"
-# dirPath_our_labels = "C:\\Users\\mail\\PycharmProjects\\\MLNLP\\Main\\Data\\manually_labelled"
-# filename_our_labels = "../../../../Documents/Scraped_merged_-_Updated_.csv"
-# Datasets
-# file = os.path.join(dirPath, filename)
 df = pd.read_csv("../input/data-bp/Combined_data.csv", encoding="ISO-8859-1", names=['text', 'target'], skiprows=1)
 # shuffle data
 df = df.sample(frac=1)
@@ -57,10 +45,8 @@ print("df reduced size:", df.index.size)
 
 decode_map = {"negative": 0, "positive": 1}
 
-# our_labels = os.path.join(dirPath_our_labels, filename_our_labels)
 df_our_labels = pd.read_csv("../input/data-bp/Scraped_merged_-_Updated_.csv", encoding="ISO-8859-1",
                             names=['text', 'ticks', 'target', 'score', 'date', 'URL'], skiprows=1)
-
 
 # helpful functions
 def listToText(l, name):
@@ -258,7 +244,6 @@ with tpu_strategy.scope():
                     print("Training for fold " + str(fold_no))
                     history = model_LSTM.fit(inputs[train], targets[train], batch_size=b, epochs=EPOCHS, verbose=1,
                                              callbacks=callbacks)
-                    # os.chdir(savepathModels)
                     # save model .h5 and .pkl files
                     model_LSTM.save(model_LSTM.name + hyperparams + '.h5')
                     pickle.dump(tokenizer, open('tokenizer' + model_LSTM.name + hyperparams, "wb"), protocol=0)
@@ -355,7 +340,6 @@ with tpu_strategy.scope():
                     fig_auc_lstm_ours.savefig(model_LSTM.name + 'AUC_ROC_our_labels_' + hyperparams + filename + '.png')
         # Increase fold number
         fold_no += 1
-    # os.chdir(savepathMetrics)
     listToText(scoresLSTM, "scoresLSTM")
     listToText(scoresLSTM_our_labels, "scoresLSTM_our_labels")
     listToText(acc_per_fold_LSTM, "acc_per_fold_LSTM")
@@ -613,7 +597,6 @@ with tpu_strategy.scope():
                     fig_auc_Bi_LSTM_ours.savefig(Bi_LSTM.name + 'AUC_ROC_our_labels_' + hyperparams + filename + '.png')
     # Increase fold number
     fold_no_bi_lstm += 1
-    # os.chdir(savepathMetrics)
     listToText(scoresBi_LSTM, "scoresBi_LSTM")
     listToText(scoresBi_LSTM_our_labels, "scoresBi_LSTM_our_labels")
     listToText(acc_per_fold_Bi_LSTM, "acc_per_fold_Bi_LSTM")
